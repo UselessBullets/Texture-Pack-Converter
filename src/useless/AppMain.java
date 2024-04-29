@@ -1,26 +1,35 @@
+package useless;
+import useless.commands.ICommand;
+import useless.commands.MoveCommand;
+import useless.commands.RemoveCommand;
+import useless.commands.SplitCommand;
 import org.jetbrains.annotations.NotNull;
+import util.FileUtil;
+import util.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class Main {
+public class AppMain {
     public static final File rootProgramDirectory = new File(".");
     public static final File inputDirectory = new File(rootProgramDirectory, "Input");
     public static final File outputDirectory = new File(rootProgramDirectory, "Output");
     public static final File configurationDirectory = new File(rootProgramDirectory, "Configuration");
     public static final File tempDirectory = new File(rootProgramDirectory, "Temp");
+    public static final Map<Character, ICommand> commandMap = new HashMap<>();
 
-    public static Map<String, File> conversionMapMap = new HashMap<>();
+    static {
+        commandMap.put('r', new RemoveCommand());
+        commandMap.put('m', new MoveCommand());
+        commandMap.put('s', new SplitCommand());
+    }
+
     public static void main(String[] args) throws IOException {
         String texPackPath = "";
         for (String arg : args){
@@ -69,25 +78,16 @@ public class Main {
         try (Scanner myReader = new Scanner(conversionMap)) {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine().strip();
-                if (data.isEmpty()) continue;
-                if (data.startsWith("#") | data.startsWith("//")) continue;
-                if (!data.contains("=")) continue;
-                String[] vals = data.split("=");
-                if (vals.length > 2) throw new RuntimeException("Malformed line '" + data + "'!");
-                System.out.println(data);
 
-                File oldFile = new File(rootDir, vals[0]);
-                if (vals.length == 1) {
-                    oldFile.delete();
-                    continue;
-                }
+                if (data.isEmpty()) continue; // Skip empty lines
+                if (StringUtils.isComment(data)) continue; // Skip comments
 
-                File newFile = new File(outputDir, vals[1]);
-                if (newFile.exists()) {
-                    FileUtil.deleteFolder(newFile, false);
-                }
-                newFile.mkdirs();
-                Files.move(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                char commandSymbol = data.toLowerCase().charAt(0);
+                String commandArgs = data.substring(1).strip();
+
+                ICommand command = commandMap.get(commandSymbol);
+                if (command == null) throw new RuntimeException("Command symbol '" + commandSymbol + "' is not recognized!");
+                command.runCommand(rootDir, outputDir, commandArgs);
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

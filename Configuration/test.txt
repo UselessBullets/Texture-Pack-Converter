@@ -1,20 +1,27 @@
+// Split Atlases
+S terrain.png assets/minecraft/textures/block/ legacyBTA/blocks.txt 32
+S gui/items.png assets/minecraft/textures/item/ legacyBTA/items.txt 32
+S particles.png assets/minecraft/textures/particle/ legacyBTA/particles.txt 16
+S art/kz.png assets/minecraft/textures/art/ legacyBTA/paintings.txt 32
+
 // Delete old now unused atlases
-terrain.png=
-particles.png=
-art=
+R terrain.png
+R particles.png
+R art
+R gui/items.png
 
 // copy files with same path
-font=font
-title=title
-misc=misc
-environment=environment
-bg=bg
-pack.png=pack.png
-manifest.json=manifest.json
+M font font
+M title title
+M misc misc
+M environment environment
+M bg bg
+M pack.png pack.png
+M manifest.json manifest.json
 
 // remap files that need remapping
-achievement=assets/minecraft/textures/gui/achievement
-mob=assets/minecraft/textures/entity
-item=assets/minecraft/textures/entity
-gui=assets/minecraft/textures/gui
-armor=assets/minecraft/textures/armor
+M achievement assets/minecraft/textures/gui/achievement
+M mob assets/minecraft/textures/entity
+M item assets/minecraft/textures/entity
+M gui assets/minecraft/textures/gui
+M armor assets/minecraft/textures/armor

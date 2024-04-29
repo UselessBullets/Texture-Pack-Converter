@@ -1,7 +1,11 @@
+package util;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -96,5 +100,12 @@ public class FileUtil {
 			zipOut.write(bytes, 0, length);
 		}
 		fis.close();
+	}
+	public static void moveFile(File input, File output) throws IOException {
+		if (output.exists()) {
+			FileUtil.deleteFolder(output, false);
+		}
+		output.mkdirs();
+		Files.move(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
 	}
 }

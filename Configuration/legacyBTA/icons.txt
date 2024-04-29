@@ -1,0 +1,37 @@
+0,0 - crosshair - 15,15
+16,0 - heart_background_empty - 9,9
+25,0 - heart_background_empty_flash - 9,9
+34,0 - heart_background_full - 9,9
+43,0 - heart_background_full_flash - 9,9
+52,0 - heart_foreground_full - 9,9
+61,0 - heart_foreground_half - 9,9
+70,0 - heart_foreground_full_flash - 9,9
+79,0 - heart_foreground_half_flash - 9,9
+88,0 - heart_foreground_preview_full - 9,9
+97,0 - heart_foreground_preview_half - 9,9
+16,9 - armor_empty - 9,9
+25,9 - armor_half - 9,9
+34,9 - armor_full - 9,9
+16,18 - air_bubble - 9,9
+25,18 - air_bubble_popped - 9,9
+
+0,16 - protection_combat - 9,9
+#0,25 - protection_arrow - 9,9 # not really sure what this is for tbh
+0,34 - protection_blast - 9,9
+0,43 - protection_falling - 9,9
+0,52 - protection_fire - 9,9
+
+0,152 - rotation_lock_arrow_up - 8,8
+8,152 - rotation_lock_arrow_down - 8,8
+0,160 - rotation_lock_cube_north - 16,16
+0,176 - rotation_lock_cube_east - 16,16
+0,192 - rotation_lock_cube_south - 16,16
+0,208 - rotation_lock_cube_west - 16,16
+0,224 - rotation_lock_cube_up - 16,16
+0,240 - rotation_lock_cube_down - 16,16
+16,160 - rotation_lock_cube_arrow_north - 16,16
+16,176 - rotation_lock_cube_arrow_east - 16,16
+16,192 - rotation_lock_cube_arrow_south - 16,16
+16,208 - rotation_lock_cube_arrow_west - 16,16
+16,224 - rotation_lock_cube_arrow_up - 16,16
+16,240 - rotation_lock_cube_arrow_down - 16,16

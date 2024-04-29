@@ -1,0 +1,40 @@
+# This is the texture used on the back of paintings
+31,0 - backing
+
+# Actual painting textures
+0,0 - kebab
+1,0 - aztec
+2,0 - alban
+3,0 - aztec2
+4,0 - bomb
+5,0 - plant
+6,0 - wasteland
+7,0 - geology
+8,0 - cactus_bird
+0,1 - pool - 2,1
+2,1 - courbet - 2,1
+4,1 - sea - 2,1
+6,1 - sunset - 2,1
+8,1 - creebet - 2,1
+10,1 - allegory - 2,1
+0,2 - wanderer - 1,2
+1,2 - graham - 1,2
+2,2 - monologue - 1,2
+0,4 - match - 2,2
+2,4 - bust - 2,2
+4,4 - stage - 2,2
+6,4 - void - 2,2
+8,4 - skull_and_roses - 2,2
+0,6 - fighters - 4,2
+4,6 - the_bull - 4,2
+0,8 - dresses - 3,3
+3,8 - the_blanket - 3,3
+6,8 - dod_fagel - 3,3
+0,11 - skeleton - 4,3
+4,11 - donkey_kong - 4,3
+8,11 - death_and_the_maiden - 4,3
+0,14 - the_box - 3,4
+3,14 - the_golden_apple - 3,4
+0,18 - pointer - 4,4
+4,18 - pigscene - 4,4
+8,18 - burning_skull - 4,4

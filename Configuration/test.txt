@@ -1,0 +1,2 @@
+bta-nethercoal.png=testDir/bta-nethercoal.png
+patches=patchesTest

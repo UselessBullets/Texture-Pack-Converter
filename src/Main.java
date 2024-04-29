@@ -65,13 +65,11 @@ public class Main {
         if (str.startsWith("\"") && str.endsWith("\"")) return str.substring(1, str.length() -2);
         return str;
     }
-    public static void convert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap){
+    public static void convert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
         rootDir.mkdirs();
         outputDir.mkdirs();
 
-        Scanner myReader = null;
-        try {
-            myReader = new Scanner(conversionMap);
+        try (Scanner myReader = new Scanner(conversionMap)) {
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine().strip();
                 if (data.isEmpty()) continue;
@@ -88,22 +86,14 @@ public class Main {
                 }
 
                 File newFile = new File(outputDir, vals[1]);
-                if (newFile.exists()){
+                if (newFile.exists()) {
                     deleteFolder(newFile, false);
                 }
                 newFile.mkdirs();
                 Files.move(oldFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
-            myReader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if (myReader != null){
-                myReader.close();
-            }
         }
     }
     public static void deleteFolder(File folder, boolean deleteContentsOnly) {

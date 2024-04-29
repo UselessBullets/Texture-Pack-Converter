@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.CopyOption;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -43,7 +46,6 @@ public class AppMain {
                     break;
             }
         }
-        if (texPackPath.isEmpty()) throw new IllegalArgumentException("argument `texture-pack` must be assigned a value!");
 
         inputDirectory.mkdirs();
         outputDirectory.mkdirs();
@@ -51,27 +53,52 @@ public class AppMain {
         tempDirectory.mkdirs();
         FileUtil.deleteFolder(tempDirectory, true);
 
-        File zipFile = new File(inputDirectory, "BTAGregPack 7.1.zip");
-        File tempDir0 = new File(new File(tempDirectory, "0"), zipFile.getName().replace(".zip", ""));
-        File tempDir1 = new File(new File(tempDirectory, "1"), zipFile.getName().replace(".zip", ""));
-        FileUtil.unzip(zipFile, tempDir0);
+        File[] fileList;
+        if (!texPackPath.isEmpty()){
+            fileList = new File[]{new File(inputDirectory, texPackPath)};
+        } else {
+            fileList = inputDirectory.listFiles();
+        }
 
-        convert(tempDir0, tempDir1, new File(configurationDirectory, "test.txt"));
+        if (fileList == null) throw new RuntimeException("File list is null!");
 
+        for (File file : fileList){
+            String packName;
 
-        FileOutputStream fos = new FileOutputStream(new File(outputDirectory, tempDir1.getName() + ".zip"));
-        ZipOutputStream zipOut = new ZipOutputStream(fos);
-        FileUtil.zipFile(tempDir1, "", zipOut, true);
+            boolean isZip = !file.isDirectory() && file.getName().endsWith(".zip");
+            if (!file.isDirectory() && !isZip) throw new RuntimeException("File " + file.getName() + " not a valid texturepack!");
+            if (isZip){
+                packName = file.getName().replace(".zip", "");
 
-        zipOut.close();
-        fos.close();
+            } else {
+                packName = file.getName();
+            }
+            File tempDir0 = new File(new File(tempDirectory, "0"), packName);
+            File tempDir1 = new File(new File(tempDirectory, "1"), packName);
 
+            if (isZip){
+                FileUtil.unzip(file, tempDir0);
+            } else {
+                Files.copy(file.toPath(), tempDir0.toPath());
+            }
 
+            recursiveConvert(tempDir0, tempDir1, new File(configurationDirectory, "test.txt"));
+
+            FileOutputStream fos = new FileOutputStream(new File(outputDirectory, tempDir1.getName() + ".zip"));
+            ZipOutputStream zipOut = new ZipOutputStream(fos);
+            FileUtil.zipFile(tempDir1, "", zipOut, true);
+
+            zipOut.close();
+            fos.close();
+        }
 
         FileUtil.deleteFolder(tempDirectory, true);
     }
+    public static void recursiveConvert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
+        versionConversion(rootDir, outputDir, conversionMap);
+    }
 
-    public static void convert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
+    public static void versionConversion(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
         rootDir.mkdirs();
         outputDir.mkdirs();
 

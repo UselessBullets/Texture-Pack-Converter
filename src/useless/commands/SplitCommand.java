@@ -5,7 +5,6 @@ import useless.AppMain;
 import util.StringUtils;
 
 import javax.imageio.ImageIO;
-import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -21,6 +20,12 @@ public class SplitCommand implements ICommand{
 
         File conversionConfig = new File(AppMain.configurationDirectory, args[2]);
         File imageToSplit  = new File(rootDirectory, args[0]);
+
+        if (!imageToSplit.exists()) {
+            System.out.println("Skipping!: File '" + imageToSplit + "' does not exist!");
+            return;
+        }
+
         File outputDir = new File(outputDirectory, args[1]);
         outputDir.mkdirs();
         int atlasWidthTiles = Integer.parseInt(args[3]);

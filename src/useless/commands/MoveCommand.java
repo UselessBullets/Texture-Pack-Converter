@@ -12,6 +12,10 @@ public class MoveCommand implements ICommand{
         if (argString.split(" ").length != 2) throw new RuntimeException("Malformed argString '" + argString + "'!");
         String[] vals = argString.split(" ");
         File oldFile = new File(rootDirectory, vals[0]);
+        if (!oldFile.exists()) {
+            System.out.println("Skipping!: File '" + oldFile + "' does not exist!");
+            return;
+        }
         File newFile = new File(outputDirectory, vals[1]);
         FileUtil.moveFile(oldFile, newFile);
     }

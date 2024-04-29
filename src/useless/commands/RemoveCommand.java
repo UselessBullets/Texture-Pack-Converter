@@ -10,7 +10,10 @@ public class RemoveCommand implements ICommand {
     @Override
     public void runCommand(@NotNull File rootDirectory, @NotNull File outputDirectory, @NotNull String argString) throws IOException {
         File oldFile = new File(rootDirectory, argString);
-        if (!oldFile.exists()) throw new RuntimeException("File '" + oldFile + "' does not exist!");
+        if (!oldFile.exists()) {
+            System.out.println("Skipping!: File '" + oldFile + "' does not exist!");
+            return;
+        }
         FileUtil.deleteFolder(oldFile, false);
     }
 }

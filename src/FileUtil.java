@@ -4,9 +4,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 
-public class UnzipUtility {
+public class FileUtil {
 	public static void unzip(File zipFilePath, File destDirectory) throws IOException {
 		byte[] buffer = new byte[1024];
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath));
@@ -49,5 +50,51 @@ public class UnzipUtility {
 		}
 
 		return destFile;
+	}
+	public static void deleteFolder(File folder, boolean deleteContentsOnly) {
+		File[] files = folder.listFiles();
+		if(files!=null) { //some JVMs return null for empty dirs
+			for(File f: files) {
+				if(f.isDirectory()) {
+					deleteFolder(f, false);
+				} else {
+					f.delete();
+				}
+			}
+		}
+		if (!deleteContentsOnly){
+			folder.delete();
+		}
+	}
+	public static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, boolean skip) throws IOException {
+		if (fileToZip.isHidden()) {
+			return;
+		}
+		if (fileToZip.isDirectory()) {
+			label0 : {
+				if (skip) break label0;
+				if (fileName.endsWith("/")) {
+					zipOut.putNextEntry(new ZipEntry(fileName));
+					zipOut.closeEntry();
+				} else {
+					zipOut.putNextEntry(new ZipEntry(fileName + "/"));
+					zipOut.closeEntry();
+				}
+			}
+			File[] children = fileToZip.listFiles();
+			for (File childFile : children) {
+				zipFile(childFile, (skip ? "":fileName + "/") + childFile.getName(), zipOut, false);
+			}
+			return;
+		}
+		FileInputStream fis = new FileInputStream(fileToZip);
+		ZipEntry zipEntry = new ZipEntry(fileName);
+		zipOut.putNextEntry(zipEntry);
+		byte[] bytes = new byte[1024];
+		int length;
+		while ((length = fis.read(bytes)) >= 0) {
+			zipOut.write(bytes, 0, length);
+		}
+		fis.close();
 	}
 }

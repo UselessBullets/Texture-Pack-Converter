@@ -1,2 +1,20 @@
-bta-nethercoal.png=testDir/bta-nethercoal.png
-patches=patchesTest
+// Delete old now unused atlases
+terrain.png=
+particles.png=
+art=
+
+// copy files with same path
+font=font
+title=title
+misc=misc
+environment=environment
+bg=bg
+pack.png=pack.png
+manifest.json=manifest.json
+
+// remap files that need remapping
+achievement=assets/minecraft/textures/gui/achievement
+mob=assets/minecraft/textures/entity
+item=assets/minecraft/textures/entity
+gui=assets/minecraft/textures/gui
+armor=assets/minecraft/textures/armor

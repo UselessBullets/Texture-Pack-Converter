@@ -22,13 +22,27 @@ public class Main {
 
     public static Map<String, File> conversionMapMap = new HashMap<>();
     public static void main(String[] args) throws IOException {
+        String texPackPath = "";
+        for (String arg : args){
+            String[] split = arg.split("=");
+            if (split.length != 2) continue;
+            String key = split[0];
+            String val = split[1];
+            switch (key){
+                case "texture-pack":
+                    texPackPath = interpretString(val);
+                    break;
+            }
+        }
+        if (texPackPath.isEmpty()) throw new IllegalArgumentException("argument `texture-pack` must be assigned a value!");
+
         inputDirectory.mkdirs();
         outputDirectory.mkdirs();
         configurationDirectory.mkdirs();
         tempDirectory.mkdirs();
         deleteFolder(tempDirectory, true);
 
-        File zipFile = new File(inputDirectory, "test.zip");
+        File zipFile = new File(inputDirectory, "BTAGregPack 7.1.zip");
         File tempDir0 = new File(new File(tempDirectory, "0"), zipFile.getName().replace(".zip", ""));
         File tempDir1 = new File(new File(tempDirectory, "1"), zipFile.getName().replace(".zip", ""));
         UnzipUtility.unzip(zipFile, tempDir0);
@@ -47,6 +61,10 @@ public class Main {
 
         deleteFolder(tempDirectory, true);
     }
+    public static String interpretString(String str){
+        if (str.startsWith("\"") && str.endsWith("\"")) return str.substring(1, str.length() -2);
+        return str;
+    }
     public static void convert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap){
         rootDir.mkdirs();
         outputDir.mkdirs();
@@ -55,14 +73,20 @@ public class Main {
         try {
             myReader = new Scanner(conversionMap);
             while (myReader.hasNextLine()) {
-                String data = myReader.nextLine();
-                if (data.strip().startsWith("#") | data.strip().startsWith("//")) continue;
+                String data = myReader.nextLine().strip();
+                if (data.isEmpty()) continue;
+                if (data.startsWith("#") | data.startsWith("//")) continue;
                 if (!data.contains("=")) continue;
                 String[] vals = data.split("=");
-                if (vals.length != 2) throw new RuntimeException("Malformed line '" + data + "'!");
+                if (vals.length > 2) throw new RuntimeException("Malformed line '" + data + "'!");
                 System.out.println(data);
 
                 File oldFile = new File(rootDir, vals[0]);
+                if (vals.length == 1) {
+                    oldFile.delete();
+                    continue;
+                }
+
                 File newFile = new File(outputDir, vals[1]);
                 if (newFile.exists()){
                     deleteFolder(newFile, false);

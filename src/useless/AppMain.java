@@ -10,6 +10,7 @@ import useless.commands.ManifestCommand;
 import useless.commands.MoveCommand;
 import useless.commands.RemoveCommand;
 import useless.commands.SplitCommand;
+import useless.gui.ConverterGui;
 import useless.logging.AppConsoleHandler;
 import useless.logging.CustomFormatter;
 import useless.version.Version;
@@ -67,14 +68,22 @@ public class AppMain {
 
     public static void main(String[] args) throws IOException {
         String texPackPath = "";
+        boolean launchGUI = true;
         for (String arg : args){
             String[] split = arg.split("=");
-            if (split.length != 2) continue;
+            if (split.length < 1) continue;
+            if (split.length > 2) continue;
             String key = split[0];
-            String val = split[1];
+            String val = null;
+            if (split.length > 1){
+                val = split[1];
+            }
             switch (key){
                 case "texture-pack":
                     texPackPath = StringUtils.interpretString(val);
+                    break;
+                case "nogui":
+                    launchGUI = false;
                     break;
             }
         }
@@ -86,19 +95,29 @@ public class AppMain {
 
         Version.init(new File(configurationDirectory, "versions.json"));
 
-        File[] fileList;
-        if (!texPackPath.isEmpty()){
-            fileList = new File[]{new File(inputDirectory, texPackPath)};
-        } else {
-            fileList = inputDirectory.listFiles();
-        }
+        try {
+            if (launchGUI){
+                // GUI Code
+                ConverterGui gui = new ConverterGui();
+            } else {
+                File[] fileList;
+                if (!texPackPath.isEmpty()){
+                    fileList = new File[]{new File(inputDirectory, texPackPath)};
+                } else {
+                    fileList = inputDirectory.listFiles();
+                }
 
-        if (fileList == null) throw new RuntimeException("File list is null!");
+                if (fileList == null) throw new RuntimeException("File list is null!");
 
-        for (File file : fileList){
-            convertFile(file);
+                for (File file : fileList){
+                    convertFile(file);
+                }
+            }
+        } catch (Exception e){
+            logger.log(Level.SEVERE, "Program has encountered an unrecoverable error!", e);
+        } finally {
+            FileUtil.deleteFolder(tempDirectory, true);
         }
-        FileUtil.deleteFolder(tempDirectory, true);
     }
     public static void convertFile(@NotNull File texturePack) throws IOException {
         FileUtil.deleteFolder(tempDirectory, true);

@@ -60,7 +60,9 @@ public class ManifestCommand implements ICommand{
         }
 
         File manOut = new File(outputDirectory, "manifest.json");
-        manOut.createNewFile();
+        if (!manOut.exists()){
+            manOut.createNewFile();
+        }
         FileWriter writer = new FileWriter(manOut);
         AppMain.GSON.toJson(manifest, writer);
         writer.close();

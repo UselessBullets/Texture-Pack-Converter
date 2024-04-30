@@ -1,3 +1,6 @@
+// copy all files
+M *
+
 // Split Atlases
 S terrain.png assets/minecraft/textures/block/ legacyBTA/blocks.txt 32
 S gui/items.png assets/minecraft/textures/item/ legacyBTA/items.txt 32
@@ -9,22 +12,19 @@ R terrain.png
 R particles.png
 R art
 R gui/items.png
-
-// copy files with same path
-M font font
-M title title
-M misc misc
-M environment environment
-M bg bg
-M pack.png pack.png
-M manifest.json manifest.json
+R pack.txt
 
 // remap files that need remapping
 M achievement assets/minecraft/textures/gui/achievement
+R achievement
 M mob assets/minecraft/textures/entity
+R mob
 M item assets/minecraft/textures/entity
+R item
 M gui assets/minecraft/textures/gui
+R gui
 M armor assets/minecraft/textures/armor
+R armor
 
 // Update manifest version
 G 7.2

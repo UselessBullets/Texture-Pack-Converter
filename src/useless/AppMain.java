@@ -24,6 +24,12 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
@@ -109,18 +115,29 @@ public class AppMain {
 
                 if (fileList == null) throw new RuntimeException("File list is null!");
 
+
+
+                ExecutorService threadPool = Executors.newCachedThreadPool();
                 for (File file : fileList){
-                    convertFile(file);
+                    threadPool.execute(() ->{
+                        try {
+                            convertFile(file);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                threadPool.shutdown();
+                while (!threadPool.awaitTermination(1, TimeUnit.MINUTES)){
+
                 }
             }
         } catch (Exception e){
             logger.log(Level.SEVERE, "Program has encountered an unrecoverable error!", e);
-        } finally {
-            FileUtil.deleteFolder(tempDirectory, true);
         }
+        FileUtil.deleteFolder(tempDirectory, true);
     }
     public static void convertFile(@NotNull File texturePack) throws IOException {
-        FileUtil.deleteFolder(tempDirectory, true);
         logger.info("Starting conversion of file '" + texturePack + "'");
         String packName;
 
@@ -139,6 +156,8 @@ public class AppMain {
         File tempDir1 = new File(new File(tempDirectory, "1"), packName);
         tempDir0.mkdirs();
         tempDir1.mkdirs();
+        FileUtil.deleteFolder(tempDir0, true);
+        FileUtil.deleteFolder(tempDir1, true);
 
         if (isZip){
             FileUtil.unzip(texturePack, tempDir0);

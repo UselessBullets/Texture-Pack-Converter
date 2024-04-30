@@ -86,46 +86,46 @@ public class AppMain {
         if (fileList == null) throw new RuntimeException("File list is null!");
 
         for (File file : fileList){
-            logger.info("Starting conversion of file '" + file + "'");
-            String packName;
-
-            boolean isZip = !file.isDirectory() && file.getName().endsWith(".zip");
-            if (!file.isDirectory() && !isZip) {
-                logger.warning("Skipping!: File " + file.getName() + " not a valid texturepack!");
-                continue;
-            }
-            if (isZip){
-                packName = file.getName().replace(".zip", "");
-
-            } else {
-                packName = file.getName();
-            }
-            File tempDir0 = new File(new File(tempDirectory, "0"), packName);
-            File tempDir1 = new File(new File(tempDirectory, "1"), packName);
-
-            if (isZip){
-                FileUtil.unzip(file, tempDir0);
-            } else {
-                Files.copy(file.toPath(), tempDir0.toPath());
-            }
-
-            recursiveConvert(tempDir0, tempDir1, new File(configurationDirectory, "test.txt"));
-
-            File zippedPackConverted = new File(outputDirectory, tempDir1.getName() + ".zip");
-            FileOutputStream fos = new FileOutputStream(zippedPackConverted);
-            ZipOutputStream zipOut = new ZipOutputStream(fos);
-
-            AppMain.logger.info("Zipping '" + tempDir1 + "' to '" + zippedPackConverted + "'");
-            FileUtil.zipFile(tempDir1, "", zipOut, true);
-
-            zipOut.close();
-            fos.close();
+            convertFile(file);
         }
 
         FileUtil.deleteFolder(tempDirectory, true);
     }
-    public static void recursiveConvert(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
-        versionConversion(rootDir, outputDir, conversionMap);
+    public static void convertFile(@NotNull File texturePack) throws IOException {
+        logger.info("Starting conversion of file '" + texturePack + "'");
+        String packName;
+
+        boolean isZip = !texturePack.isDirectory() && texturePack.getName().endsWith(".zip");
+        if (!texturePack.isDirectory() && !isZip) {
+            logger.warning("Skipping!: File " + texturePack.getName() + " not a valid texturepack!");
+            return;
+        }
+        if (isZip){
+            packName = texturePack.getName().replace(".zip", "");
+
+        } else {
+            packName = texturePack.getName();
+        }
+        File tempDir0 = new File(new File(tempDirectory, "0"), packName);
+        File tempDir1 = new File(new File(tempDirectory, "1"), packName);
+
+        if (isZip){
+            FileUtil.unzip(texturePack, tempDir0);
+        } else {
+            Files.copy(texturePack.toPath(), tempDir0.toPath());
+        }
+
+        versionConversion(tempDir0, tempDir1, new File(configurationDirectory, "test.txt"));
+
+        File zippedPackConverted = new File(outputDirectory, tempDir1.getName() + ".zip");
+        FileOutputStream fos = new FileOutputStream(zippedPackConverted);
+        ZipOutputStream zipOut = new ZipOutputStream(fos);
+
+        AppMain.logger.info("Zipping '" + tempDir1 + "' to '" + zippedPackConverted + "'");
+        FileUtil.zipFile(tempDir1, "", zipOut, true);
+
+        zipOut.close();
+        fos.close();
     }
 
     public static void versionConversion(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {

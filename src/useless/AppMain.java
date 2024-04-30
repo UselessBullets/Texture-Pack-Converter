@@ -1,21 +1,25 @@
 package useless;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import useless.bta.TexturePackManifest;
 import useless.commands.ICommand;
+import useless.commands.ManifestCommand;
 import useless.commands.MoveCommand;
 import useless.commands.RemoveCommand;
 import useless.commands.SplitCommand;
 import useless.logging.AppConsoleHandler;
 import useless.logging.CustomFormatter;
+import useless.version.Version;
 import util.FileUtil;
 import util.StringUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -34,6 +38,10 @@ public class AppMain {
     public static final File configurationDirectory = new File(rootProgramDirectory, "Configuration");
     public static final File tempDirectory = new File(rootProgramDirectory, "Temp");
     public static final Map<Character, ICommand> commandMap = new HashMap<>();
+    public static final Gson GSON = new GsonBuilder()
+            .setPrettyPrinting()
+            .registerTypeAdapter(TexturePackManifest.class, new TexturePackManifest())
+            .create();
 
     static {
         LogManager.getLogManager().reset();
@@ -54,6 +62,7 @@ public class AppMain {
         commandMap.put('r', new RemoveCommand());
         commandMap.put('m', new MoveCommand());
         commandMap.put('s', new SplitCommand());
+        commandMap.put('g', new ManifestCommand());
     }
 
     public static void main(String[] args) throws IOException {
@@ -74,7 +83,8 @@ public class AppMain {
         outputDirectory.mkdirs();
         configurationDirectory.mkdirs();
         tempDirectory.mkdirs();
-        FileUtil.deleteFolder(tempDirectory, true);
+
+        Version.init(new File(configurationDirectory, "versions.json"));
 
         File[] fileList;
         if (!texPackPath.isEmpty()){
@@ -88,10 +98,10 @@ public class AppMain {
         for (File file : fileList){
             convertFile(file);
         }
-
         FileUtil.deleteFolder(tempDirectory, true);
     }
     public static void convertFile(@NotNull File texturePack) throws IOException {
+        FileUtil.deleteFolder(tempDirectory, true);
         logger.info("Starting conversion of file '" + texturePack + "'");
         String packName;
 
@@ -108,21 +118,46 @@ public class AppMain {
         }
         File tempDir0 = new File(new File(tempDirectory, "0"), packName);
         File tempDir1 = new File(new File(tempDirectory, "1"), packName);
+        tempDir0.mkdirs();
+        tempDir1.mkdirs();
 
         if (isZip){
             FileUtil.unzip(texturePack, tempDir0);
         } else {
-            Files.copy(texturePack.toPath(), tempDir0.toPath());
+            FileUtils.copyDirectory(texturePack, tempDir0);
         }
 
-        versionConversion(tempDir0, tempDir1, new File(configurationDirectory, "test.txt"));
+        Version ver = Version.identifyVersion(tempDir0);
+        if (ver == Version.UNKNOWN | ver == Version.NONE) {
+            logger.severe("Skipping Conversion!: Failed to identify version for '" + texturePack + "'!");
+            return;
+        }
+
+        while (!(ver.next == null | ver.next.equals("NONE") | ver.mapLocation == null)){
+            versionConversion(tempDir0, tempDir1, new File(configurationDirectory, ver.mapLocation));
+            Version newVer = Version.identifyVersion(tempDir1);
+            if (ver == newVer) {
+                String message = "Recursion issue detected killing program!";
+                logger.severe(message);
+                throw new RuntimeException(message);
+            }
+            if (newVer == Version.UNKNOWN | newVer == Version.NONE) {
+                logger.severe("Skipping Conversion!: Failed to identify version for '" + texturePack + "'!");
+                return;
+            }
+            FileUtil.deleteFolder(tempDir0, true);
+            File tempFile = tempDir0;
+            tempDir0 = tempDir1;
+            tempDir1 = tempFile;
+            ver = newVer;
+        }
 
         File zippedPackConverted = new File(outputDirectory, tempDir1.getName() + ".zip");
         FileOutputStream fos = new FileOutputStream(zippedPackConverted);
         ZipOutputStream zipOut = new ZipOutputStream(fos);
 
-        AppMain.logger.info("Zipping '" + tempDir1 + "' to '" + zippedPackConverted + "'");
-        FileUtil.zipFile(tempDir1, "", zipOut, true);
+        AppMain.logger.info("Zipping '" + tempDir0 + "' to '" + zippedPackConverted + "'");
+        FileUtil.zipFile(tempDir0, "", zipOut, true);
 
         zipOut.close();
         fos.close();

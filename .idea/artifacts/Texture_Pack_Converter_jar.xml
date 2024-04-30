@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Texture-Pack-Converter:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Texture_Pack_Converter_jar</output-path>
+    <root id="archive" name="Texture-Pack-Converter.jar">
+      <element id="module-output" name="Texture-Pack-Converter" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jetbrains/annotations/24.0.0/annotations-24.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.16.1/commons-io-2.16.1.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

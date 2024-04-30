@@ -1,5 +1,6 @@
 package util;
 
+import org.apache.commons.io.FileUtils;
 import useless.AppMain;
 
 import java.io.File;
@@ -109,6 +110,10 @@ public class FileUtil {
 			FileUtil.deleteFolder(output, false);
 		}
 		output.mkdirs();
-		Files.move(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		if (input.isDirectory()){
+			FileUtils.copyDirectory(input, output);
+		} else {
+			Files.copy(input.toPath(), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
 	}
 }

@@ -1,0 +1,16 @@
+{
+  "LEGACY": {
+    "next": "7.1",
+    "map": "legacy_to_7.1.txt",
+    "compareVal": 0
+  },
+  "7.1": {
+    "next": "7.2",
+    "map": "7.1_to_7.2.txt",
+    "compareVal": 71000
+  },
+  "7.2": {
+    "next": "NONE",
+    "compareVal": 72000
+  }
+}

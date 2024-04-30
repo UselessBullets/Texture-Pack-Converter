@@ -1,0 +1,11 @@
+// Move everything
+m *
+
+// Generate manifest with texture pack file set as the name
+// pack.txt contents set as the description
+// and 7.1 set as the version
+G 7.1
+
+// remove pack.txt
+R pack.txt
+

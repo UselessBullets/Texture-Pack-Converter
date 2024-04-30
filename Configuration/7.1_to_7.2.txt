@@ -25,3 +25,6 @@ M mob assets/minecraft/textures/entity
 M item assets/minecraft/textures/entity
 M gui assets/minecraft/textures/gui
 M armor assets/minecraft/textures/armor
+
+// Update manifest version
+G 7.2

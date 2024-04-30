@@ -10,7 +10,11 @@ import java.io.IOException;
 public class MoveCommand implements ICommand{
     @Override
     public void runCommand(@NotNull File rootDirectory, @NotNull File outputDirectory, @NotNull String argString) throws IOException {
-        if (argString.split(" ").length != 2) throw new RuntimeException("Malformed argString '" + argString + "'!");
+        if (argString.equals("*")){
+            FileUtil.moveFile(rootDirectory, outputDirectory);
+            AppMain.logger.info("Moved '" + rootDirectory + "' to '" + outputDirectory + "'");
+            return;
+        }
         String[] vals = argString.split(" ");
         File oldFile = new File(rootDirectory, vals[0]);
         if (!oldFile.exists()) {

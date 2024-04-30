@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.logging.Level;
 
 public class SplitCommand implements ICommand{
     @Override
@@ -22,7 +23,7 @@ public class SplitCommand implements ICommand{
         File imageToSplit  = new File(rootDirectory, args[0]);
 
         if (!imageToSplit.exists()) {
-            System.out.println("Skipping!: File '" + imageToSplit + "' does not exist!");
+            AppMain.logger.warning("Skipping!: File '" + imageToSplit + "' does not exist!");
             return;
         }
 
@@ -43,9 +44,12 @@ public class SplitCommand implements ICommand{
                 if (data.isEmpty()) continue; // Skip empty lines
                 if (StringUtils.isComment(data)) continue; // Skip comments
                 String[] vals = data.split(" - ");
-                if (vals.length < 2 | vals.length > 3) throw new RuntimeException("Malformed data '" + data + "'!"); //
+                if (vals.length < 2 | vals.length > 3) {
+                    AppMain.logger.warning("Skipping!: Malformed data '" + data + "'!");
+                    continue;
+                }
 
-                System.out.println(data);
+                AppMain.logger.info("Processing entry: " + data);
 
                 String[] pos = vals[0].strip().split(",");
                 int cX = Integer.parseInt(pos[0]);
@@ -67,10 +71,12 @@ public class SplitCommand implements ICommand{
 
                 BufferedImage bufferedimage = new BufferedImage(subWidth, subHeight, BufferedImage.TYPE_INT_ARGB);
                 bufferedimage.setRGB(0, 0, subWidth, subHeight, cropped, 0, subWidth);
-                ImageIO.write(bufferedimage, "png", new File(outputDir, textureName));
+                File imageOut = new File(outputDir, textureName);
+                ImageIO.write(bufferedimage, "png", imageOut);
+                AppMain.logger.info("Saved texture '" + textureName + "' to '" + imageOut + "'");
             }
         } catch (FileNotFoundException  e) {
-            e.printStackTrace();
+            AppMain.logger.log(Level.WARNING, "Skipping!: Conversion of '" + argString + "' failed!", e);
         }
     }
 }

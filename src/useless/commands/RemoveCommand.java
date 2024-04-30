@@ -1,6 +1,7 @@
 package useless.commands;
 
 import org.jetbrains.annotations.NotNull;
+import useless.AppMain;
 import util.FileUtil;
 
 import java.io.File;
@@ -11,9 +12,10 @@ public class RemoveCommand implements ICommand {
     public void runCommand(@NotNull File rootDirectory, @NotNull File outputDirectory, @NotNull String argString) throws IOException {
         File oldFile = new File(rootDirectory, argString);
         if (!oldFile.exists()) {
-            System.out.println("Skipping!: File '" + oldFile + "' does not exist!");
+            AppMain.logger.warning("Skipping!: File '" + oldFile + "' does not exist!");
             return;
         }
         FileUtil.deleteFolder(oldFile, false);
+        AppMain.logger.info("Removed file '" + oldFile + "'");
     }
 }

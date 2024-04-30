@@ -1,6 +1,7 @@
 package useless.commands;
 
 import org.jetbrains.annotations.NotNull;
+import useless.AppMain;
 import util.FileUtil;
 
 import java.io.File;
@@ -13,10 +14,11 @@ public class MoveCommand implements ICommand{
         String[] vals = argString.split(" ");
         File oldFile = new File(rootDirectory, vals[0]);
         if (!oldFile.exists()) {
-            System.out.println("Skipping!: File '" + oldFile + "' does not exist!");
+            AppMain.logger.warning("Skipping!: File '" + oldFile + "' does not exist!");
             return;
         }
         File newFile = new File(outputDirectory, vals[1]);
         FileUtil.moveFile(oldFile, newFile);
+        AppMain.logger.info("Moved '" + oldFile + "' to '" + newFile + "'");
     }
 }

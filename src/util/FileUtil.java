@@ -1,5 +1,7 @@
 package util;
 
+import useless.AppMain;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -13,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 
 public class FileUtil {
 	public static void unzip(File zipFilePath, File destDirectory) throws IOException {
+		AppMain.logger.info("Unzipping '" + zipFilePath + "' to '" + destDirectory + "'");
 		byte[] buffer = new byte[1024];
 		ZipInputStream zis = new ZipInputStream(new FileInputStream(zipFilePath));
 		ZipEntry zipEntry = zis.getNextEntry();
@@ -70,13 +73,13 @@ public class FileUtil {
 			folder.delete();
 		}
 	}
-	public static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, boolean skip) throws IOException {
+	public static void zipFile(File fileToZip, String fileName, ZipOutputStream zipOut, boolean first) throws IOException {
 		if (fileToZip.isHidden()) {
 			return;
 		}
 		if (fileToZip.isDirectory()) {
 			label0 : {
-				if (skip) break label0;
+				if (first) break label0;
 				if (fileName.endsWith("/")) {
 					zipOut.putNextEntry(new ZipEntry(fileName));
 					zipOut.closeEntry();
@@ -87,7 +90,7 @@ public class FileUtil {
 			}
 			File[] children = fileToZip.listFiles();
 			for (File childFile : children) {
-				zipFile(childFile, (skip ? "":fileName + "/") + childFile.getName(), zipOut, false);
+				zipFile(childFile, (first ? "":fileName + "/") + childFile.getName(), zipOut, false);
 			}
 			return;
 		}

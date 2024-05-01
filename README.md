@@ -69,3 +69,13 @@ There are three types of configuration formats the Texture Pack Converter progra
       - Example:
         `G 7.1`
 - Atlas Splitter Map
+  - This map is a list of individual textures to be created from the current atlas image
+  - The Atlas Splitter Map supports the use of `#` and `//` for comments
+  - Each line of the map consists of 3 arguments `<tileX,tileY> - <name> - <tilesWide,tilesTall>`, each argument is seperated by the sperater sequence of ` - `
+    - `<tileX,tileY>` is the position (in tile widths) of the texture on the atlas
+    - `<name>`  is the name the generate image will be given
+    - `<tilesWide,tilesTall>` is an optional argument that specifies how many talls across or tall a given texture is
+  - Examples:
+    - `0,0 - grass_top`
+    - `4,7 - tool_axe_gold`
+    - `4,11 - donkey_kong - 4,3`

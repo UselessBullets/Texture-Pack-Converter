@@ -1,7 +1,7 @@
 package util;
 
 import org.apache.commons.io.FileUtils;
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 
 import java.io.File;
 import java.io.FileInputStream;

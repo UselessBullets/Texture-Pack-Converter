@@ -1,4 +1,4 @@
-package useless.version;
+package org.useless.textureconverter.version;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 import useless.bta.TexturePackManifest;
 
 import java.io.File;

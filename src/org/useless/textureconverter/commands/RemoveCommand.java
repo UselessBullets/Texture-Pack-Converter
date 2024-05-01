@@ -1,7 +1,7 @@
-package useless.commands;
+package org.useless.textureconverter.commands;
 
 import org.jetbrains.annotations.NotNull;
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 import util.FileUtil;
 
 import java.io.File;

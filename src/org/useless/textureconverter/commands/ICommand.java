@@ -1,4 +1,4 @@
-package useless.commands;
+package org.useless.textureconverter.commands;
 
 import org.jetbrains.annotations.NotNull;
 

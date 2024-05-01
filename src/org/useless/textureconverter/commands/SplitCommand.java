@@ -1,7 +1,7 @@
-package useless.commands;
+package org.useless.textureconverter.commands;
 
 import org.jetbrains.annotations.NotNull;
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 import util.StringUtils;
 
 import javax.imageio.ImageIO;
@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.logging.Level;
 
-public class SplitCommand implements ICommand{
+public class SplitCommand implements ICommand {
     @Override
     public void runCommand(@NotNull File rootDirectory, @NotNull File outputDirectory, @NotNull String argString) throws IOException {
         if (argString.split(" ").length != 4) throw new RuntimeException("Malformed argString '" + argString + "'!");

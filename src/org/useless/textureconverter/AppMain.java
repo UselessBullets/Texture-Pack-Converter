@@ -1,20 +1,20 @@
-package useless;
+package org.useless.textureconverter;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
+import org.useless.textureconverter.commands.ICommand;
+import org.useless.textureconverter.commands.ManifestCommand;
+import org.useless.textureconverter.commands.MoveCommand;
+import org.useless.textureconverter.commands.RemoveCommand;
+import org.useless.textureconverter.commands.SplitCommand;
+import org.useless.textureconverter.gui.ConverterGui;
+import org.useless.textureconverter.gui.GuiContainer;
+import org.useless.textureconverter.logging.AppConsoleHandler;
+import org.useless.textureconverter.logging.CustomFormatter;
+import org.useless.textureconverter.version.Version;
 import useless.bta.TexturePackManifest;
-import useless.commands.ICommand;
-import useless.commands.ManifestCommand;
-import useless.commands.MoveCommand;
-import useless.commands.RemoveCommand;
-import useless.commands.SplitCommand;
-import useless.gui.ConverterGui;
-import useless.gui.GuiContainer;
-import useless.logging.AppConsoleHandler;
-import useless.logging.CustomFormatter;
-import useless.version.Version;
 import util.FileUtil;
 import util.StringUtils;
 

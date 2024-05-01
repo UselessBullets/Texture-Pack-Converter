@@ -1,8 +1,8 @@
-package useless.commands;
+package org.useless.textureconverter.commands;
 
 import com.google.gson.stream.JsonReader;
 import org.jetbrains.annotations.NotNull;
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 import useless.bta.TexturePackManifest;
 
 import java.io.File;
@@ -11,7 +11,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.logging.Level;
 

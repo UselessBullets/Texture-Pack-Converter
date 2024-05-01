@@ -1,6 +1,6 @@
-package useless.logging;
+package org.useless.textureconverter.logging;
 
-import useless.AppMain;
+import org.useless.textureconverter.AppMain;
 
 import javax.swing.*;
 import java.util.ArrayList;

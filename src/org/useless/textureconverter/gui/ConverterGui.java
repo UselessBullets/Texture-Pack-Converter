@@ -1,9 +1,9 @@
-package useless.gui;
+package org.useless.textureconverter.gui;
 
-import useless.AppMain;
-import useless.logging.CustomFormatter;
-import useless.logging.GuiConsoleHandler;
-import useless.version.Version;
+import org.useless.textureconverter.AppMain;
+import org.useless.textureconverter.logging.CustomFormatter;
+import org.useless.textureconverter.logging.GuiConsoleHandler;
+import org.useless.textureconverter.version.Version;
 import util.FileUtil;
 
 import javax.swing.*;
@@ -12,6 +12,8 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ConverterGui extends JFrame {
@@ -21,6 +23,17 @@ public class ConverterGui extends JFrame {
     // Constructor to setup the GUI components and event handlers
     public ConverterGui(GuiContainer container) {
         AppMain.gui = this;
+
+        List<Image> l = new ArrayList<>();
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/1024.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/512.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/256.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/128.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/64.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/32.png")));
+        l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/16.png")));
+        setIconImages(l);
+
         setContentPane(container.MainFrame);
 
         selectedVersion = Version.getMostRecentVersion();

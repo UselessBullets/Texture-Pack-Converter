@@ -1,6 +1,6 @@
-package useless.gui;
+package org.useless.textureconverter.gui;
 
-import useless.version.Version;
+import org.useless.textureconverter.version.Version;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;

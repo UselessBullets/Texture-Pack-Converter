@@ -1,8 +1,7 @@
-package useless.logging;
+package org.useless.textureconverter.logging;
 
 import java.util.logging.ConsoleHandler;
 import java.util.logging.LogRecord;
-import java.util.logging.StreamHandler;
 
 public class AppConsoleHandler extends ConsoleHandler {
     @Override

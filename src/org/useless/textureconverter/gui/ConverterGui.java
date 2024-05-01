@@ -1,5 +1,6 @@
 package org.useless.textureconverter.gui;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import org.useless.textureconverter.AppMain;
 import org.useless.textureconverter.logging.CustomFormatter;
 import org.useless.textureconverter.logging.GuiConsoleHandler;
@@ -39,10 +40,9 @@ public class ConverterGui extends JFrame {
         selectedVersion = Version.getMostRecentVersion();
 
         try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException e) {
-            throw new RuntimeException(e);
+            UIManager.setLookAndFeel( new FlatDarculaLaf() );
+        } catch( Exception ex ) {
+            AppMain.logger.log(Level.WARNING, "Failed to initialize LaF", ex);
         }
 
         addWindowListener(new WindowAdapter() {

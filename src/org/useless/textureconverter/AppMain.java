@@ -1,5 +1,6 @@
 package org.useless.textureconverter;
 
+import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.commons.io.FileUtils;
@@ -108,6 +109,7 @@ public class AppMain {
 
         try {
             if (launchGUI){
+                FlatDarculaLaf.setup();
                 openGUI();
             } else {
                 File[] fileList;

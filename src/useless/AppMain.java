@@ -11,12 +11,14 @@ import useless.commands.MoveCommand;
 import useless.commands.RemoveCommand;
 import useless.commands.SplitCommand;
 import useless.gui.ConverterGui;
+import useless.gui.GuiContainer;
 import useless.logging.AppConsoleHandler;
 import useless.logging.CustomFormatter;
 import useless.version.Version;
 import util.FileUtil;
 import util.StringUtils;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -24,11 +26,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -58,7 +57,7 @@ public class AppMain {
         logger.addHandler(consoleHandler);
         try {
             File logDir = new File(rootProgramDirectory, "Logs");
-            logDir.mkdirs();
+            createDirectoryIfMissing(logDir);
             Handler fileHandler = new FileHandler(logDir.toPath() + "/log.txt", 1024 * 512, 1);
             fileHandler.setFormatter(new CustomFormatter(false));
             logger.addHandler(fileHandler);
@@ -86,6 +85,7 @@ public class AppMain {
             }
             switch (key){
                 case "texture-pack":
+                    assert val != null;
                     texPackPath = StringUtils.interpretString(val);
                     break;
                 case "nogui":
@@ -94,17 +94,16 @@ public class AppMain {
             }
         }
 
-        inputDirectory.mkdirs();
-        outputDirectory.mkdirs();
-        configurationDirectory.mkdirs();
-        tempDirectory.mkdirs();
+        createDirectoryIfMissing(inputDirectory);
+        createDirectoryIfMissing(outputDirectory);
+        createDirectoryIfMissing(configurationDirectory);
+        createDirectoryIfMissing(tempDirectory);
 
         Version.init(new File(configurationDirectory, "versions.json"));
 
         try {
             if (launchGUI){
-                // GUI Code
-                ConverterGui gui = new ConverterGui();
+                openGUI();
             } else {
                 File[] fileList;
                 if (!texPackPath.isEmpty()){
@@ -113,29 +112,41 @@ public class AppMain {
                     fileList = inputDirectory.listFiles();
                 }
 
-                if (fileList == null) throw new RuntimeException("File list is null!");
-
-
-
-                ExecutorService threadPool = Executors.newCachedThreadPool();
-                for (File file : fileList){
-                    threadPool.execute(() ->{
-                        try {
-                            convertFile(file);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-                }
-                threadPool.shutdown();
-                while (!threadPool.awaitTermination(1, TimeUnit.MINUTES)){
-
-                }
+                convertAll(fileList);
             }
         } catch (Exception e){
             logger.log(Level.SEVERE, "Program has encountered an unrecoverable error!", e);
         }
-        FileUtil.deleteFolder(tempDirectory, true);
+        if (!launchGUI){
+            FileUtil.deleteFolder(tempDirectory, true);
+        }
+    }
+    public static JFrame gui;
+    public static void openGUI(){
+        if (gui == null){
+            new ConverterGui(new GuiContainer());
+        }
+    }
+    public static void convertAll(@NotNull File[] fileList) throws InterruptedException {
+        if (fileList == null) throw new RuntimeException("File list is null!");
+
+        ExecutorService threadPool = Executors.newCachedThreadPool();
+        for (File file : fileList){
+            threadPool.execute(() ->{
+                try {
+                    convertFile(file);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
+        }
+        threadPool.shutdown();
+        boolean finished = threadPool.awaitTermination(5, TimeUnit.MINUTES);
+        if (!finished){
+            logger.warning("Process timed out before finishing all tasks!");
+        } else {
+            logger.info("Process finished all tasks successfully");
+        }
     }
     public static void convertFile(@NotNull File texturePack) throws IOException {
         logger.info("Starting conversion of file '" + texturePack + "'");
@@ -154,8 +165,10 @@ public class AppMain {
         }
         File tempDir0 = new File(new File(tempDirectory, "0"), packName);
         File tempDir1 = new File(new File(tempDirectory, "1"), packName);
-        tempDir0.mkdirs();
-        tempDir1.mkdirs();
+
+        createDirectoryIfMissing(tempDir0);
+        createDirectoryIfMissing(tempDir1);
+
         FileUtil.deleteFolder(tempDir0, true);
         FileUtil.deleteFolder(tempDir1, true);
 
@@ -226,6 +239,11 @@ public class AppMain {
             }
         } catch (FileNotFoundException e) {
             logger.log(Level.SEVERE, "Conversion failed!", e);
+        }
+    }
+    private static void createDirectoryIfMissing(File file){
+        if (file.mkdirs()){
+            logger.info("Created directory '" + file + "'");
         }
     }
 }

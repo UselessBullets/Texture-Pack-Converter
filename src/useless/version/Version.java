@@ -1,8 +1,5 @@
 package useless.version;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -82,7 +79,7 @@ public class Version {
             AppMain.logger.info("Pack '" + pack + "' is for a pre 7.1 version");
             return getVersion("LEGACY");
         }
-        AppMain.logger.log(Level.WARNING, "Could not locate a 'pack.txt' file or a 'manifest.json' file, defaulting to legacy version!");
-        return getVersion("LEGACY");
+        AppMain.logger.log(Level.WARNING, "Could not locate a 'pack.txt' file or a 'manifest.json' file, Unknown pack format!");
+        return UNKNOWN;
     }
 }

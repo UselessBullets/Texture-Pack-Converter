@@ -12,7 +12,9 @@ import useless.bta.TexturePackManifest;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
@@ -21,6 +23,7 @@ public class Version {
     public static final Version UNKNOWN = new Version("UNKNOWN", null, null, -1);
     public static final Version NONE = new Version("NONE", null, null, -1);
     private static final Map<String, Version> versionMap = new HashMap<>();
+    private static Version mostRecentVersion = null;
     private static boolean hasInitialized = false;
     @NotNull
     public final String identifier;
@@ -35,6 +38,9 @@ public class Version {
         this.next = next;
         this.mapLocation = mapLocation;
         this.compare = compare;
+    }
+    public String toString(){
+        return identifier;
     }
     public static void init(@NotNull File versionsManifest){
         if (hasInitialized) return;
@@ -57,9 +63,28 @@ public class Version {
         } catch (IOException e) {
             AppMain.logger.log(Level.SEVERE, "Failed to read '" + versionsManifest + "'!", e);
         }
+
+        mostRecentVersion = NONE;
+        for (Version v : versionMap.values()){
+            if (v.compare > mostRecentVersion.compare){
+                mostRecentVersion = v;
+            }
+        }
+    }
+    public static List<Version> getAllVersions(){
+        List<Version> v = new ArrayList<>();
+        for (Version val : versionMap.values()){
+            if (val.compare >= 0){
+                v.add(val);
+            }
+        }
+        return v;
     }
     public static Version getVersion(String id){
         return versionMap.getOrDefault(id.toUpperCase(Locale.US), UNKNOWN);
+    }
+    public static Version getMostRecentVersion(){
+        return mostRecentVersion;
     }
     public static Version identifyVersion(File pack){
         File manifestFile = new File(pack, "manifest.json");

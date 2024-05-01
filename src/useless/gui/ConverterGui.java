@@ -3,6 +3,7 @@ package useless.gui;
 import useless.AppMain;
 import useless.logging.CustomFormatter;
 import useless.logging.GuiConsoleHandler;
+import useless.version.Version;
 import util.FileUtil;
 
 import javax.swing.*;
@@ -16,10 +17,13 @@ import java.util.logging.Level;
 public class ConverterGui extends JFrame {
     public GuiConsoleHandler handler;
     public File[] selectedPacks;
+    public Version selectedVersion;
     // Constructor to setup the GUI components and event handlers
     public ConverterGui(GuiContainer container) {
         AppMain.gui = this;
         setContentPane(container.MainFrame);
+
+        selectedVersion = Version.getMostRecentVersion();
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -47,7 +51,7 @@ public class ConverterGui extends JFrame {
             Thread t = new Thread(() -> {
                 container.convertButton.setEnabled(false);
                 try {
-                    AppMain.convertAll(fileList);
+                    AppMain.convertAll(fileList, selectedVersion);
                 } catch (InterruptedException ex) {
                     AppMain.logger.log(Level.SEVERE, "Interrupt exception occurred! Ending conversion tasks!", ex);
                 }
@@ -78,7 +82,12 @@ public class ConverterGui extends JFrame {
 
         container.progressBar1.setVisible(false); // TODO implement progress bar
 
+        for (Version v : Version.getAllVersions()){
+            container.OutputVersionSelect.addItem(v);
+        }
 
+        container.OutputVersionSelect.setSelectedItem(selectedVersion);
+        container.OutputVersionSelect.addActionListener(e -> selectedVersion = (Version) container.OutputVersionSelect.getSelectedItem());
 
         pack();
         setVisible(true);

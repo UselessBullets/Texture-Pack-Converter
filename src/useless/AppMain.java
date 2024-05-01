@@ -72,7 +72,15 @@ public class AppMain {
     }
 
     public static void main(String[] args) throws IOException {
+        createDirectoryIfMissing(inputDirectory);
+        createDirectoryIfMissing(outputDirectory);
+        createDirectoryIfMissing(configurationDirectory);
+        createDirectoryIfMissing(tempDirectory);
+
+        Version.init(new File(configurationDirectory, "versions.json"));
+
         String texPackPath = "";
+        Version targetVersion = Version.getMostRecentVersion();
         boolean launchGUI = true;
         for (String arg : args){
             String[] split = arg.split("=");
@@ -91,15 +99,12 @@ public class AppMain {
                 case "nogui":
                     launchGUI = false;
                     break;
+                case "target-version":
+                    assert val != null;
+                    targetVersion = Version.getVersion(val);
             }
         }
 
-        createDirectoryIfMissing(inputDirectory);
-        createDirectoryIfMissing(outputDirectory);
-        createDirectoryIfMissing(configurationDirectory);
-        createDirectoryIfMissing(tempDirectory);
-
-        Version.init(new File(configurationDirectory, "versions.json"));
 
         try {
             if (launchGUI){
@@ -112,7 +117,7 @@ public class AppMain {
                     fileList = inputDirectory.listFiles();
                 }
 
-                convertAll(fileList);
+                convertAll(fileList, targetVersion);
             }
         } catch (Exception e){
             logger.log(Level.SEVERE, "Program has encountered an unrecoverable error!", e);
@@ -127,14 +132,14 @@ public class AppMain {
             new ConverterGui(new GuiContainer());
         }
     }
-    public static void convertAll(@NotNull File[] fileList) throws InterruptedException {
+    public static void convertAll(@NotNull File[] fileList, Version targetVersion) throws InterruptedException {
         if (fileList == null) throw new RuntimeException("File list is null!");
 
         ExecutorService threadPool = Executors.newCachedThreadPool();
         for (File file : fileList){
             threadPool.execute(() ->{
                 try {
-                    convertFile(file);
+                    convertFile(file, targetVersion);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -148,7 +153,7 @@ public class AppMain {
             logger.info("Process finished all tasks successfully");
         }
     }
-    public static void convertFile(@NotNull File texturePack) throws IOException {
+    public static void convertFile(@NotNull File texturePack, Version targetVersion) throws IOException {
         logger.info("Starting conversion of file '" + texturePack + "'");
         String packName;
 
@@ -184,6 +189,25 @@ public class AppMain {
             return;
         }
 
+        if (ver.compare >= targetVersion.compare){
+            logger.warning("Skipping Conversion!: Pack '" + texturePack + "' is at or exceeds target version!");
+            return;
+        }
+        boolean canConvertToTarget = false;
+        Version _ver = ver;
+        while (_ver.compare < targetVersion.compare){
+            if (_ver.next == null) break;
+            _ver = Version.getVersion(_ver.next);
+            if (_ver == targetVersion){
+                canConvertToTarget = true;
+                break;
+            }
+        }
+        if (!canConvertToTarget){
+            logger.warning("Skipping Conversion!: Pack '" + texturePack + "' has no conversion path to target!");
+            return;
+        }
+
         while (!(ver.next == null | ver.next.equals("NONE") | ver.mapLocation == null)){
             versionConversion(tempDir0, tempDir1, new File(configurationDirectory, ver.mapLocation));
             Version newVer = Version.identifyVersion(tempDir1);
@@ -201,6 +225,7 @@ public class AppMain {
             tempDir0 = tempDir1;
             tempDir1 = tempFile;
             ver = newVer;
+            if (ver == targetVersion | ver.compare > targetVersion.compare) break;
         }
 
         File zippedPackConverted = new File(outputDirectory, tempDir1.getName() + ".zip");
@@ -215,8 +240,8 @@ public class AppMain {
     }
 
     public static void versionConversion(@NotNull File rootDir, @NotNull File outputDir, @NotNull File conversionMap) throws IOException {
-        rootDir.mkdirs();
-        outputDir.mkdirs();
+        createDirectoryIfMissing(rootDir);
+        createDirectoryIfMissing(outputDir);
 
         try (Scanner myReader = new Scanner(conversionMap)) {
             while (myReader.hasNextLine()) {

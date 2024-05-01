@@ -20,9 +20,9 @@ public class ConverterGui extends JFrame {
     public GuiConsoleHandler handler;
     public File[] selectedPacks;
     public Version selectedVersion;
-    // Constructor to setup the GUI components and event handlers
     public ConverterGui(GuiContainer container) {
         AppMain.gui = this;
+        AppMain.logger.info("Opening GUI");
 
         List<Image> l = new ArrayList<>();
         l.add(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/icons/1024.png")));
@@ -45,7 +45,6 @@ public class ConverterGui extends JFrame {
             throw new RuntimeException(e);
         }
 
-        AppMain.logger.info("Opening GUI");
         addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent windowEvent) {
                 close();
